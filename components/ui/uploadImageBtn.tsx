@@ -1,87 +1,140 @@
-"use client";
+"use client" // This component must be a client component
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Image from "next/image";
+import {
+    ImageKitAbortError,
+    ImageKitInvalidRequestError,
+    ImageKitServerError,
+    ImageKitUploadNetworkError,
+    upload,
+} from "@imagekit/next";
+import { useRef, useState } from "react";
 
-export default function UploadImageButton({
-  onUploaded,
-}: {
-  onUploaded?: (url: string) => void;
-}) {
-  const [preview, setPreview] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+// UploadExample component demonstrates file uploading using ImageKit's Next.js SDK.
+const UploadImageBtn = ({ id }: { id: string }) => {
+    // State to keep track of the current upload progress (percentage)
+    const [progress, setProgress] = useState(0);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    // Create a ref for the file input element to access its files easily
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // preview
-    const localUrl = URL.createObjectURL(file);
-    setPreview(localUrl);
+    // Create an AbortController instance to provide an option to cancel the upload if needed.
+    const abortController = new AbortController();
 
-    setUploading(true);
+    /**
+     * Authenticates and retrieves the necessary upload credentials from the server.
+     *
+     * This function calls the authentication API endpoint to receive upload parameters like signature,
+     * expire time, token, and publicKey.
+     *
+     * @returns {Promise<{signature: string, expire: string, token: string, publicKey: string}>} The authentication parameters.
+     * @throws {Error} Throws an error if the authentication request fails.
+     */
+    const authenticator = async () => {
+        try {
+            // Perform the request to the upload authentication endpoint.
+            const response = await fetch("http://localhost:3000/api/auth/imagekit");
+            if (!response.ok) {
+                // If the server response is not successful, extract the error text for debugging.
+                const errorText = await response.text();
+                throw new Error(`Request failed with status ${response.status}: ${errorText}`);
+            }
 
-    try {
-      // get ImageKit signature
-      const authResp = await fetch("/api/imagekit/auth");
-      const auth = await authResp.json();
+            // Parse and destructure the response JSON for upload credentials.
+            const data = await response.json();
+            const { signature, expire, token, publicKey } = data;
+            return { signature, expire, token, publicKey };
+        } catch (error) {
+            // Log the original error for debugging before rethrowing a new error.
+            console.error("Authentication error:", error);
+            throw new Error("Authentication request failed");
+        }
+    };
 
-      const form = new FormData();
-      form.append("file", file);
-      form.append("publicKey", auth.publicKey);
-      form.append("signature", auth.signature);
-      form.append("expire", auth.expire);
-      form.append("token", auth.token);
+    /**
+     * Handles the file upload process.
+     *
+     * This function:
+     * - Validates file selection.
+     * - Retrieves upload authentication credentials.
+     * - Initiates the file upload via the ImageKit SDK.
+     * - Updates the upload progress.
+     * - Catches and processes errors accordingly.
+     */
+    const handleUpload = async () => {
+        // Access the file input element using the ref
+        const fileInput = fileInputRef.current;
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            alert("Please select a file to upload");
+            return;
+        }
 
-      const uploadResp = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
-        method: "POST",
-        body: form,
-      });
+        // Extract the first file from the file input
+        const file = fileInput.files[0];
 
-      const data = await uploadResp.json();
-      if (data?.url) {
-        onUploaded?.(data.url);
-      }
-    } catch (err) {
-      console.error("Upload failed:", err);
-    } finally {
-      setUploading(false);
-    }
-  };
+        // Retrieve authentication parameters for the upload.
+        let authParams;
+        try {
+            authParams = await authenticator();
+        } catch (authError) {
+            console.error("Failed to authenticate for upload:", authError);
+            return;
+        }
+        const { signature, expire, token, publicKey } = authParams;
 
-  return (
-    <div className="flex flex-col items-center space-y-4 w-full">
-      {/* Preview Box */}
-      {preview ? (
-        <div className="w-40 h-40 rounded-lg overflow-hidden border shadow-sm">
-          <Image
-            src={preview}
-            alt="preview"
-            width={160}
-            height={160}
-            className="object-cover w-full h-full"
-          />
-        </div>
-      ) : (
-        <div className="w-40 h-40 flex items-center justify-center border rounded-lg text-sm text-muted-foreground">
-          No image selected
-        </div>
-      )}
+        // Call the ImageKit SDK upload function with the required parameters and callbacks.
+        try {
+            const today = new Date().toISOString().split("T")[0];
+            const dateFolder = `/checkpoints/${id}/${today}`;
 
-      {/* File Input */}
-      <Input
-        type="file"
-        accept="image/*"
-        onChange={handleUpload}
-        disabled={uploading}
-        className="cursor-pointer"
-      />
 
-      <Button disabled={uploading} className="w-full">
-        {uploading ? "Uploading..." : "Upload Image"}
-      </Button>
-    </div>
-  );
-}
+
+            const uploadResponse = await upload({
+                // Authentication parameters
+                expire,
+                token,
+                signature,
+                publicKey,
+                file,
+                fileName: file.name, // Optionally set a custom file name
+                folder: dateFolder,
+                // Progress callback to update upload progress state
+                onProgress: (event) => {
+                    setProgress((event.loaded / event.total) * 100);
+                },
+                // Abort signal to allow cancellation of the upload if needed.
+                abortSignal: abortController.signal,
+            });
+            console.log("Upload response:", uploadResponse);
+        } catch (error) {
+            // Handle specific error types provided by the ImageKit SDK.
+            if (error instanceof ImageKitAbortError) {
+                console.error("Upload aborted:", error.reason);
+            } else if (error instanceof ImageKitInvalidRequestError) {
+                console.error("Invalid request:", error.message);
+            } else if (error instanceof ImageKitUploadNetworkError) {
+                console.error("Network error:", error.message);
+            } else if (error instanceof ImageKitServerError) {
+                console.error("Server error:", error.message);
+            } else {
+                // Handle any other errors that may occur.
+                console.error("Upload error:", error);
+            }
+        }
+    };
+
+    return (
+        <>
+            {/* File input element using React ref */}
+            <input type="file" ref={fileInputRef} />
+            {/* Button to trigger the upload process */}
+            <button type="button" onClick={handleUpload}>
+                Upload file
+            </button>
+            <br />
+            {/* Display the current upload progress */}
+            Upload progress: <progress value={progress} max={100}></progress>
+        </>
+    );
+};
+
+export default UploadImageBtn;
