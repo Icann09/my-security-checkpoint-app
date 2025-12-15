@@ -7,23 +7,39 @@ import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { signInWithCredentials } from "@/lib/actions/auth";
+import { Eye, EyeOff } from "lucide-react"; 
+import { useRouter } from "next/navigation";
 
 export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
   const [isLoading, setIsLoading] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const isSignIn = type === "SIGN_IN";
 
-  const handleSubmit = async () => {
-    setIsLoading(true);
+  
 
-    // simulate request
-    await new Promise((res) => setTimeout(res, 1500));
+  const handleSubmit = async () => {
+  
+    setIsLoading(true);
+    console.log(email, password);
+    const result = await signInWithCredentials({ email, password });
 
     setIsLoading(false);
+
+    if (result.success) {
+      router.push("/cp1");
+      console.log("Signed in successfully!");
+    } else {
+      console.error(result.error);
+      alert(result.error); // or use a toast
+    }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 md:p-8 lg:p-12">
@@ -66,16 +82,24 @@ export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
             </div>
 
             {/* Password */}
-            <div className="space-y-2">
-              <label className="text-sm md:text-base font-medium">Password</label>
-              <Input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="rounded-xl"
-              />
-            </div>
+        <div className="space-y-2 relative">
+          <label className="text-sm md:text-base font-medium">Password</label>
+          <Input
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="rounded-xl pr-10" // padding for icon
+          />
+          {/* Eye icon */}
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
 
             <Button
               className="w-full rounded-xl mt-4 text-base md:text-lg py-6 md:py-7"

@@ -1,3 +1,5 @@
+"use server"
+
 import config from "../config";
 
 export async function uploadToImageKit(file: File) {
