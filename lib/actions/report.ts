@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/database/drizzle";
 import { reports, checkpoints } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { getWITAMinutes, getWITADate } from "../utils";
 
 export const createReport = async ({
   checkpointId,
@@ -29,9 +30,18 @@ export const createReport = async ({
     return { success: false, error: "Checkpoint not found" };
   }
 
-  const hour = new Date().getHours();
-  const autoShift =
-    hour < 12 ? "morning" : hour < 18 ? "afternoon" : "night";
+
+
+  const minutes = getWITAMinutes();
+  let autoShift: "PAGI" | "SORE" | "MALAM";
+
+  if (minutes >= 7 * 60 + 30 && minutes < 15 * 60 + 30) {
+    autoShift = "PAGI";      // 07:30 – 15:30
+  } else if (minutes >= 15 * 60 + 30 && minutes < 22 * 60) {
+    autoShift = "SORE";    // 15:30 – 22:00
+  } else {
+    autoShift = "MALAM";        // 22:00 – 07:30
+  }
 
   const finalShift = shift ?? autoShift;
 
@@ -39,7 +49,7 @@ export const createReport = async ({
     await db.insert(reports).values({
       guardId: session.user.id,
       checkpointId: checkpoint[0].id, // ✅ UUID
-      reportDate: new Date(),
+      reportDate: getWITADate(),
       shift: finalShift,
       imageUrl,
       imagaeTakenAt: new Date(),

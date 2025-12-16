@@ -1,5 +1,5 @@
 {
-  "id": "b8d8885a-d793-4074-90f2-90d29b60c82e",
+  "id": "a2f0b66f-fa52-4440-8a84-1140a0934453",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -173,41 +173,7 @@
           "default": "now()"
         }
       },
-      "indexes": {
-        "reports_unique_checkpoint_entry": {
-          "name": "reports_unique_checkpoint_entry",
-          "columns": [
-            {
-              "expression": "guard_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "checkpoint_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "report_date",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "shift",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "reports_guard_id_guards_id_fk": {
           "name": "reports_guard_id_guards_id_fk",

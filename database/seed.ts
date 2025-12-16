@@ -72,54 +72,54 @@ async function seed() {
   // const securityHashedPassword6 = await hash("security6",12);
   // const securityHashedPassword7 = await hash("security7",12);
   
-  const satpamIds = Array.from({ length: 7 }, () => randomUUID());
+//   const satpamIds = Array.from({ length: 7 }, () => randomUUID());
 
-  const usersData = await Promise.all(
-  satpamIds.map(async (id, i) => ({
-    id,
-    email: `satpam${i + 1}@gmail.com`,
-    password: await hash(`satpam${i + 1}`, 12), // ✅ now safe
-    name: `Satpam ${i + 1}`,
-  }))
-);
+//   const usersData = await Promise.all(
+//   satpamIds.map(async (id, i) => ({
+//     id,
+//     email: `satpam${i + 1}@gmail.com`,
+//     password: await hash(`satpam${i + 1}`, 12), // ✅ now safe
+//     name: `Satpam ${i + 1}`,
+//   }))
+// );
 
   // Insert users
-  for (const u of usersData) {
-    const exists = await db.select({ id: users.id }).from(users).where(eq(users.email, u.email)).limit(1);
-    if (!exists.length) {
-      await db.insert(users).values(u);
-    }
-  }
+  // for (const u of usersData) {
+  //   const exists = await db.select({ id: users.id }).from(users).where(eq(users.email, u.email)).limit(1);
+  //   if (!exists.length) {
+  //     await db.insert(users).values(u);
+  //   }
+  // }
 
-  // Insert guards using the **same IDs** as users
-  const guardsData = usersData.map(u => ({
-    id: u.id, // FK → users.id
-    fullName: u.name!,
-    nip: `SATPAM-${(u.name!.split(" ")[1] as string).padStart(3, "0")}`,
-    phone: "081234567890",
-  }));
+  // // Insert guards using the **same IDs** as users
+  // const guardsData = usersData.map(u => ({
+  //   id: u.id, // FK → users.id
+  //   fullName: u.name!,
+  //   nip: `SATPAM-${(u.name!.split(" ")[1] as string).padStart(3, "0")}`,
+  //   phone: "081234567890",
+  // }));
 
-  for (const g of guardsData) {
-    const exists = await db.select({ id: guards.id }).from(guards).where(eq(guards.id, g.id)).limit(1);
-    if (!exists.length) {
-      await db.insert(guards).values(g);
-    }
-  }
+  // for (const g of guardsData) {
+  //   const exists = await db.select({ id: guards.id }).from(guards).where(eq(guards.id, g.id)).limit(1);
+  //   if (!exists.length) {
+  //     await db.insert(guards).values(g);
+  //   }
+  // }
 
 
   /* =========================
      3. CHECKPOINTS (7 points)
      ========================= */
 
-  // const checkpointData = Array.from({ length: 7 }).map((_, i) => ({
-  //   id: randomUUID(),
-  //   checkpointNumber: i + 1,
-  //   description: `Checkpoint ${i + 1} area`,
-  // }));
+  const checkpointData = Array.from({ length: 7 }).map((_, i) => ({
+    id: randomUUID(),
+    checkpointNumber: i + 1,
+    description: `Checkpoint ${i + 1} area`,
+  }));
 
-  // await db.insert(checkpoints).values(checkpointData);
+  await db.insert(checkpoints).values(checkpointData);
 
-  // console.log("✅ Checkpoints seeded");
+  console.log("✅ Checkpoints seeded");
 
   /* =========================
      4. REPORTS (per hour / per checkpoint)

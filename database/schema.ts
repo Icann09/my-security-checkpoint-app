@@ -57,11 +57,6 @@ export const checkpoints = pgTable("checkpoints", {
 
       createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     },
-    (table) => ({
-      uniqueCheckpointEntry: uniqueIndex(
-        "reports_unique_checkpoint_entry"
-      ).on(table.guardId, table.checkpointId, table.reportDate, table.shift),
-    })
   );
 
 
