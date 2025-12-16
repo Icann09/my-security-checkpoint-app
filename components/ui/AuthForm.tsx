@@ -10,6 +10,7 @@ import Link from "next/link";
 import { signInWithCredentials } from "@/lib/actions/auth";
 import { Eye, EyeOff } from "lucide-react"; 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,9 +52,18 @@ export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
       >
         <Card className="rounded-2xl shadow-lg">
           <CardContent className="p-6 space-y-6 md:p-8 lg:p-10">
-            <h1 className="text-2xl md:text-3xl font-semibold text-center">
-              {isSignIn ? "Sign In" : "Sign Up"}
-            </h1>
+            <div className="flex flex-col gap-1">
+              <Image
+                src="/PLN_Nusantara_Power.png"
+                alt="PLN Nusantara Power"
+                width={200}
+                height={90}
+                priority
+                className="object-contain"
+              />
+              <h1 className="font-semibold">CENTRAL PLTD RAHA</h1>
+            </div>
+            
 
             {/* Full Name - only for Sign Up */}
             {!isSignIn && (
@@ -70,7 +80,7 @@ export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
             )}
 
             {/* Email */}
-            <div className="space-y-2">
+            <div className="flex gap-3 flex-col">
               <label className="text-sm md:text-base font-medium">Email</label>
               <Input
                 type="email"
@@ -82,27 +92,31 @@ export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
             </div>
 
             {/* Password */}
-        <div className="space-y-2 relative">
-          <label className="text-sm md:text-base font-medium">Password</label>
-          <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="rounded-xl pr-10" // padding for icon
-          />
-          {/* Eye icon */}
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
+            <div className="flex gap-3 flex-col">
+              <label className="text-sm md:text-base font-medium">Password</label>
+
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="rounded-xl pr-10"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
 
             <Button
-              className="w-full rounded-xl mt-4 text-base md:text-lg py-6 md:py-7"
+              className="w-full rounded-xl mt-4 text-base md:text-lg py-6 md:py-7 bg-primary cursor-pointer"
               onClick={handleSubmit}
               disabled={isLoading}
             >
@@ -119,7 +133,7 @@ export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
             </Button>
 
             {/* CTA */}
-            <p className="text-center text-sm md:text-base text-muted-foreground mt-2">
+            {/* <p className="text-center text-sm md:text-base text-muted-foreground mt-2">
               {isSignIn ? "Don't have any account? " : "Already have an account? "}
               <Link
                 href={isSignIn ? "/sign-up" : "/sign-in"}
@@ -127,7 +141,7 @@ export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
               >
                 {isSignIn ? "Create an Account" : "Sign In"}
               </Link>
-            </p>
+            </p> */}
           </CardContent>
         </Card>
       </motion.div>

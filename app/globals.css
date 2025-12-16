@@ -5,8 +5,7 @@
 
 :root {
   /* Colors */
-  --primary-dark: rgb(21, 103, 123);
-  --primary: oklch(0.21 0.034 264.665);
+  --primary: rgb(21, 103, 123);
   --secondary: oklch(0.967 0.003 264.542);
   --secondary-dark: rgb(18, 93, 114);
   --radius: 0.625rem;

@@ -3,6 +3,7 @@
 import { createReport } from "@/lib/actions/report";
 import { upload } from "@imagekit/next";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 const UploadReportBtn = ({ checkpointId }: { checkpointId: string }) => {
   const [progress, setProgress] = useState(0);
@@ -48,8 +49,10 @@ const UploadReportBtn = ({ checkpointId }: { checkpointId: string }) => {
       });
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to save report");
+        toast("Report Already exist");
+        return;
       }
+
 
       alert("Report submitted successfully ✅");
       setProgress(0);
