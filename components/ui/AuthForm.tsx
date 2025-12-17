@@ -12,7 +12,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
+export default function AuthPage({ type, path }: { type: "SIGN_IN" | "SIGN_UP", path: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -33,7 +33,7 @@ export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
     setIsLoading(false);
 
     if (result.success) {
-      router.push("/cp1");
+      router.push(path);
       console.log("Signed in successfully!");
     } else {
       console.error(result.error);
@@ -61,7 +61,9 @@ export default function AuthPage({ type }: { type: "SIGN_IN" | "SIGN_UP" }) {
                 priority
                 className="object-contain"
               />
-              <h1 className="font-semibold">CENTRAL PLTD RAHA</h1>
+              <h1 className="text-xl font-semibold">SENTRAL PLTD RAHA</h1>
+              <p>PATROL CHECK SECURITY</p>
+
             </div>
             
 

@@ -6,10 +6,9 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { getWITADateString } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 
-const UploadReportBtn = ({ checkpointId }: { checkpointId: string }) => {
+const UploadReportBtn = ({ checkpointId, description }: { checkpointId: string, description: string }) => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -98,7 +97,7 @@ const UploadReportBtn = ({ checkpointId }: { checkpointId: string }) => {
         
         {/* Header */}
         <div className="space-y-1 text-center">
-          <h2 className="text-lg font-semibold">Submit Checkpoint Report</h2>
+          <h2 className="text-lg font-semibold">Submit {description} Report</h2>
           <p className="text-sm text-muted-foreground">
             Upload a photo to confirm your patrol
           </p>

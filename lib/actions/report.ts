@@ -52,7 +52,7 @@ export const createReport = async ({
       reportDate: getWITADate(),
       shift: finalShift,
       imageUrl,
-      imagaeTakenAt: new Date(),
+      imagaeTakenAt: getWITADate(),
     });
 
     return { success: true };

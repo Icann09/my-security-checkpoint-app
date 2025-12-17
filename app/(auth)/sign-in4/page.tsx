@@ -1,8 +1,6 @@
 "use client"
 
 import AuthForm from "@/components/ui/AuthForm"
-import { signInWithCredentials } from "@/lib/actions/auth"
-import { signInSchema } from "@/lib/validations"
 
 
 export default function Page() {
@@ -10,6 +8,7 @@ export default function Page() {
     <div>
       <AuthForm 
         type="SIGN_IN"
+        path="/cp4"
       />
     </div>
   )
