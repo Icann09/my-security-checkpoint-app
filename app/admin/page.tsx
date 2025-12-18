@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { getReports } from "@/lib/admin/report";
-import { getWITADateAdmin } from "@/lib/utils";
-import Image from "next/image";
 
 // Types inferred from schema
 export type Report = {
@@ -65,7 +63,7 @@ export default function ReportsDashboard() {
       <div className="overflow-x-auto rounded-xl border bg-card">
         <table className="w-full border-collapse text-sm">
           <thead className="bg-muted/50 text-left">
-            <tr>
+            <tr className="text-center">
               <th className="px-4 py-3">Date</th>
               <th className="px-4 py-3">Shift</th>
               <th className="px-4 py-3">Guard</th>
@@ -97,38 +95,33 @@ export default function ReportsDashboard() {
                 key={report.id}
                 className="border-t hover:bg-muted/30 transition"
               >
-                <td className="px-4 py-3 whitespace-nowrap">
+                <td className="px-4 py-3 whitespace-nowrap text-center">
                   {report.reportDate.toLocaleDateString("id-ID")}
                 </td>
-                <td className="px-4 py-3 capitalize">
+                <td className="px-4 py-3 capitalize text-center">
                   <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
                     {report.shift}
                   </span>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 text-center">
                   {report.guard?.fullName ?? "—"}
                 </td>
-
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 text-center">
                   {report.checkpoint?.description ?? "—"}
                 </td>
-
-                <td className="px-4 py-3">
-                  <a
-                    href={report.imageUrl}
-                    target="_blank"
-                    className="text-primary hover:underline"
-                  >
-                    View
+                <td className="px-4 py-3 flex justify-center">
+                  <a href={report.imageUrl} target="_blank">
+                    <img
+                      src={report.imageUrl}
+                      alt="Report image"
+                      className="h-10 w-16 rounded-sm object-cover border"
+                      loading="lazy"
+                    />
                   </a>
                 </td>
-                
-                <td className="px-4 py-3 text-xs text-muted-foreground">
+                <td className="px-4 py-3 text-xs text-muted-foreground text-center">
                   {report.imagaeTakenAt.toISOString().slice(11,16)}
                 </td>
-
-          
-
               </tr>
             ))}
           </tbody>
