@@ -53,3 +53,17 @@ export const getWITADateString = () => {
     day: "2-digit",
   }).format(new Date());
 };
+
+// lib/utils.ts
+export function getWITADateAdmin(date: string | Date) {
+  return new Date(date).toLocaleString("id-ID", {
+    timeZone: "Asia/Makassar", // WITA (UTC+8)
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
