@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getReports } from "@/lib/admin/report";
+import SignOutButton from "@/components/ui/SignOutBtn";
 
 // Types inferred from schema
 export type Report = {
@@ -50,12 +51,15 @@ export default function ReportsDashboard() {
   return (
     <div className="w-full space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-4">
         <div>
           <h1 className="text-xl font-semibold">Reports Dashboard</h1>
           <p className="text-sm text-muted-foreground">
             Daily checkpoint patrol reports
           </p>
+        </div>
+        <div>
+          <SignOutButton />
         </div>
       </div>
 

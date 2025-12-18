@@ -15,7 +15,7 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col gap-5 w-full justify-center items-center">
-      <UploadReoportBtn checkpointId="7" description="Checkpoint 7 Area"/>
+      <UploadReoportBtn checkpointId="7" description="Checkpoint 7 ROT"/>
       <SignOutButton />
 
 

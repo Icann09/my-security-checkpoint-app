@@ -53,13 +53,13 @@ async function seed() {
   // const satpams = [
   //   {
   //     id: satpamIds[0],
-  //     email: "lakeke1@gmail.com",
+  //     email: "lakeke@gmail.com",
   //     password: securityHashedPassword1,
   //     name: "LA KEKE",
   //   },
   //   {
   //     id: satpamIds[1],
-  //     email: "laodemuhalfin@gmail.com",
+  //     email: "laodemuhalfian@gmail.com",
   //     password: securityHashedPassword2,
   //     name: "LAODE MUH ALFIN",
   //   },
