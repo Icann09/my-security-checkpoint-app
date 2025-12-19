@@ -1,5 +1,5 @@
 {
-  "id": "a2f0b66f-fa52-4440-8a84-1140a0934453",
+  "id": "0a0d51dd-17ad-4204-b677-94163aa42506",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -164,6 +164,13 @@
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
         },
         "created_at": {
           "name": "created_at",

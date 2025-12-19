@@ -24,6 +24,7 @@ export type Report = {
   checkpoint: {
     description: string;
   } | null;
+  description: string;
 };
 
 
@@ -31,22 +32,67 @@ export type Report = {
 export default function ReportsDashboard() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  const todayKey = new Date().toISOString().split("T")[0];
+
 
   useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const data = await getReports();
-        setReports(data);
+  const fetchReports = async () => {
+    try {
+      const data = await getReports();
+      setReports(data);
 
-      } catch (err) {
-        console.error("Failed to load reports", err);
-      } finally {
-        setLoading(false);
+      const todayKey = new Date().toISOString().split("T")[0];
+
+      // If today's reports exist, use today
+      const hasToday = data.some(
+        (r) => r.reportDate.toISOString().startsWith(todayKey)
+      );
+
+      if (hasToday) {
+        setSelectedDate(todayKey);
+      } else {
+        // fallback: latest available date
+        const dates = data
+          .map((r) => r.reportDate.toISOString().split("T")[0])
+          .sort()
+          .reverse();
+
+        setSelectedDate(dates[0] ?? null);
       }
-    };
+    } catch (err) {
+      console.error("Failed to load reports", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchReports();
-  }, []);
+  fetchReports();
+}, []);
+
+
+  const groupedReports = reports.reduce<Record<string, Report[]>>(
+    (acc, report) => {
+      const dateKey = report.reportDate.toISOString().split("T")[0]; // yyyy-mm-dd
+
+      if (!acc[dateKey]) acc[dateKey] = [];
+      acc[dateKey].push(report);
+
+      return acc;
+    },
+    {}
+  );
+
+  const dateOptions = Object.keys(groupedReports).map((date) => ({
+    value: date,
+    label: new Date(date).toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }),
+  }));
 
   return (
     <div className="w-full space-y-6">
@@ -62,6 +108,17 @@ export default function ReportsDashboard() {
           <SignOutButton />
         </div>
       </div>
+      <select
+        value={selectedDate ?? ""}
+        onChange={(e) => setSelectedDate(e.target.value)}
+        className="rounded-lg border px-3 py-2 text-sm ml-3"
+      >
+        {dateOptions.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
 
       {/* Table */}
       <div className="overflow-x-auto rounded-xl border bg-card">
@@ -74,6 +131,8 @@ export default function ReportsDashboard() {
               <th className="px-4 py-3">Checkpoint</th>
               <th className="px-4 py-3">Image</th>
               <th className="px-4 py-3">Taken At</th>
+              <th className="px-4 py-3">Keterangan</th>
+
             </tr>
           </thead>
 
@@ -94,7 +153,8 @@ export default function ReportsDashboard() {
               </tr>
             )}
 
-            {reports.map((report) => (
+{selectedDate &&
+  groupedReports[selectedDate]?.map((report) => (
               <tr
                 key={report.id}
                 className="border-t hover:bg-muted/30 transition"
@@ -125,6 +185,9 @@ export default function ReportsDashboard() {
                 </td>
                 <td className="px-4 py-3 text-xs text-muted-foreground text-center">
                   {report.imagaeTakenAt.toISOString().slice(11,16)}
+                </td>
+                <td className="px-4 py-3 text-xs text-muted-foreground text-center">
+                  {report.description}
                 </td>
               </tr>
             ))}

@@ -37,27 +37,31 @@ export const checkpoints = pgTable("checkpoints", {
 });
 
 // 3. Reports (1 row = 1 checkpoint image)
-  export const reports = pgTable(
-    "reports",
-    {
-      id: uuid("id").defaultRandom().primaryKey(),
+export const reports = pgTable(
+  "reports",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
 
-      guardId: uuid("guard_id")
-        .references(() => guards.id, { onDelete: "cascade" })
-        .notNull(),
+    guardId: uuid("guard_id")
+      .references(() => guards.id, { onDelete: "cascade" })
+      .notNull(),
 
-      checkpointId: uuid("checkpoint_id")
-        .references(() => checkpoints.id)
-        .notNull(),
+    checkpointId: uuid("checkpoint_id")
+      .references(() => checkpoints.id)
+      .notNull(),
 
-      reportDate: date("report_date", { mode: "date" }).notNull(),
-      shift: text("shift").notNull().default("unknown"),
-      imageUrl: text("image_url").notNull(),
-      imagaeTakenAt: timestamp("taken_at", { withTimezone: true }).notNull(),
+    reportDate: date("report_date", { mode: "date" }).notNull(),
+    shift: text("shift").notNull().default("unknown"),
+    imageUrl: text("image_url").notNull(),
+    imagaeTakenAt: timestamp("taken_at", { withTimezone: true }).notNull(),
 
-      createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    },
-  );
+    // ✅ NEW COLUMN
+    description: text("description").notNull().default("aman"),
+
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  },
+);
+
 
 
 

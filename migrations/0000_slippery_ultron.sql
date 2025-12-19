@@ -23,6 +23,7 @@ CREATE TABLE "reports" (
 	"shift" text DEFAULT 'unknown' NOT NULL,
 	"image_url" text NOT NULL,
 	"taken_at" timestamp with time zone NOT NULL,
+	"description" text DEFAULT 'pending' NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
