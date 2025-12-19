@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getReports } from "@/lib/admin/report";
 import SignOutButton from "@/components/ui/SignOutBtn";
 
@@ -72,19 +72,17 @@ export default function ReportsDashboard() {
 }, []);
 
 
-  const groupedReports = reports.reduce<Record<string, Report[]>>(
-    (acc, report) => {
-      const dateKey = report.reportDate.toISOString().split("T")[0]; // yyyy-mm-dd
+  const groupedReports = useMemo(() => {
+  return reports.reduce<Record<string, Report[]>>((acc, report) => {
+    const dateKey = report.reportDate.toISOString().split("T")[0];
+    if (!acc[dateKey]) acc[dateKey] = [];
+    acc[dateKey].push(report);
+    return acc;
+  }, {});
+}, [reports]);
 
-      if (!acc[dateKey]) acc[dateKey] = [];
-      acc[dateKey].push(report);
-
-      return acc;
-    },
-    {}
-  );
-
-  const dateOptions = Object.keys(groupedReports).map((date) => ({
+const dateOptions = useMemo(() => {
+  return Object.keys(groupedReports).map((date) => ({
     value: date,
     label: new Date(date).toLocaleDateString("id-ID", {
       weekday: "long",
@@ -93,6 +91,8 @@ export default function ReportsDashboard() {
       day: "numeric",
     }),
   }));
+}, [groupedReports]);
+
 
   return (
     <div className="w-full space-y-6">
